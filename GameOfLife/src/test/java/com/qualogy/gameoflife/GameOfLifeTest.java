@@ -6,7 +6,6 @@ import org.junit.Test;
 
 public class GameOfLifeTest {
 
-	
 	@Test
 	public void testBlock() {
 		GameOfLife game = new GameOfLife(4, 4);
@@ -44,7 +43,7 @@ public class GameOfLifeTest {
 	}
 	
 	@Test
-	public void testCellDiesWithLessNeighbours() {
+	public void testCellDiesWithLessThanTwoNeighbours() {
 		GameOfLife game = new GameOfLife(4, 4);
 		game.makeAlive(1, 1);
 		game.makeAlive(1, 2);
@@ -52,15 +51,7 @@ public class GameOfLifeTest {
 		assertFalse(newGame.isAlive(1,1));
 		assertFalse(newGame.isAlive(1,2));
 	}
-	
-	@Test
-	public void testSingleCellWithoutNeighboursDies() {
-		GameOfLife game = new GameOfLife(4, 4);
-		game.makeAlive(0, 1);
-		GameOfLife alldead = new GameOfLife(4, 4);
-		assertEquals(alldead, game.play(1));
-	}
-	
+		
 	@Test
 	public void testCountLiveCellsForEmptyGrid() {
 		GameOfLife game = new GameOfLife(4, 4);
@@ -79,9 +70,15 @@ public class GameOfLifeTest {
 	public void testLiveNeighboursForDeadCellWithoutEdges() {
 		GameOfLife game = new GameOfLife(4, 4);
 		game.makeAlive(1, 2);
-		int rowPosition = 1;
-		int columnPosition = 1;
-		assertEquals(1, game.liveNeighbourCount(columnPosition, rowPosition));
+		assertEquals(1, game.liveNeighbourCount(1, 1));
+	}
+	
+	@Test
+	public void testLiveNeighboursForLiveCellWithoutEdges() {
+		GameOfLife game = new GameOfLife(4, 4);
+		game.makeAlive(1, 2);
+		game.makeAlive(1, 1);
+		assertEquals(1, game.liveNeighbourCount(1, 1));		
 	}
 	
 	@Test
@@ -97,4 +94,61 @@ public class GameOfLifeTest {
 		game.makeAlive(1, 2);
 		assertEquals(1, game.liveNeighbourCount(1, 3));
 	}
+
+	@Test
+	public void testSingleCellWithoutNeighboursDies() {
+		GameOfLife game = new GameOfLife(4, 4);
+		game.makeAlive(0, 1);
+		GameOfLife alldead = new GameOfLife(4, 4);
+		assertEquals(alldead, game.play(1));
+	}
+	
+	@Test
+	public void testLiveCellWithOne() {
+		
+	}
+
+	@Test
+	public void testCellDiesWithMoreThanThreeNeighbours() {
+		GameOfLife game = new GameOfLife(5, 5);
+		game.makeAlive(2, 1);
+		game.makeAlive(2, 2);
+		game.makeAlive(2, 3);
+		game.makeAlive(1, 2);
+		game.makeAlive(3, 2);
+		GameOfLife newGame = game.play(1);
+		assertFalse(newGame.isAlive(2, 2));
+	}
+	
+	@Test
+	public void testCellStaysAliveWithExactlyThreeNeighbours() {
+		GameOfLife game = new GameOfLife(4, 4);
+		game.makeAlive(2, 1);
+		game.makeAlive(2, 2);
+		game.makeAlive(1, 2);
+		game.makeAlive(1, 1);
+		GameOfLife newGame = game.play(1);
+		assertTrue(newGame.isAlive(1, 1));		
+	}
+
+	@Test
+	public void testCellStaysAliveWithExactlyTwoNeighbours() {
+		GameOfLife game = new GameOfLife(4, 4);
+		game.makeAlive(2, 1);
+		game.makeAlive(2, 2);
+		game.makeAlive(1, 1);
+		GameOfLife newGame = game.play(1);
+		assertTrue(newGame.isAlive(1, 1));		
+	}
+	
+	@Test
+	public void testDeadCellBecomesAliveWithExactlyThreeNeighbours() {
+		GameOfLife game = new GameOfLife(4, 4);
+		game.makeAlive(2, 1);
+		game.makeAlive(2, 2);
+		game.makeAlive(1, 2);
+		GameOfLife newGame = game.play(1);
+		assertTrue(newGame.isAlive(1, 1));				
+	}
+
 }
