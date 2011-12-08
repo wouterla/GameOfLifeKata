@@ -1,6 +1,5 @@
 package com.qualogy.gameoflife;
 
-import java.awt.print.Printable;
 import java.util.Arrays;
 
 public class GameOfLife {
