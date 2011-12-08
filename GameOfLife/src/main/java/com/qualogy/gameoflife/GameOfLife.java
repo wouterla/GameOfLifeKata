@@ -14,20 +14,21 @@ public class GameOfLife {
 		grid = new boolean[numberOfColumns][numberOfRows];
 	}
 
-	public GameOfLife play(int cyclesOfLife) {
-		GameOfLife newGame = new GameOfLife(numberOfColumns, numberOfRows);
+	public void play(int cyclesOfLife) {
+		boolean[][] newGrid = new boolean[numberOfColumns][numberOfRows];
+		
 		for (int column = 0; column < numberOfColumns; column++) {
 			for (int row = 0; row < numberOfRows; row++) {
 				int neighbours = liveNeighbourCount(column, row);
 				if (isAlive(column, row) && (neighbours == 2)) {
-						newGame.makeAlive(column, row);
+					newGrid[column][row] = true;
 				} 
 				if (neighbours == 3) {
-					newGame.makeAlive(column, row);
+					newGrid[column][row] = true;
 				}
 			}
 		}
-		return newGame;
+		grid = newGrid;
 	}
 
 	public int countLiveCells() {
@@ -61,37 +62,8 @@ public class GameOfLife {
 		return neighbourCount;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + Arrays.hashCode(grid);
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		GameOfLife other = (GameOfLife) obj;
-		if (this.grid.length != other.grid.length) {
-			return false;
-		}
-		for (int i = 0; i < this.grid.length; i++) {
-			if (!Arrays.equals(grid[i], other.grid[i]))
-				return false;
-
-		}
-		return true;
-	}
-
 	public void makeAlive(int column, int row) {
 		grid[column][row] = true;
-
 	}
 
 	public boolean isAlive(int column, int row) {
@@ -104,13 +76,32 @@ public class GameOfLife {
 		for (int row = numberOfRows - 1; row >= 0; row--) {
 			for (int col = 0; col < numberOfColumns; col++) {
 				if (grid[col][row]) {
-					str = str + "X";
+					str = str + 'X';
 				} else {
-					str = str + ".";
+					str = str + '.';
 				}
 			}
 			str = str + "\n";
 		}
 		return str;
+	}
+	
+	public static GameOfLife fromString(String gridString) {
+		String[] rows = gridString.split("\n");
+		int nrOfRows = rows.length;
+		int nrOfColumns = rows[0].length();
+
+		GameOfLife game = new GameOfLife(nrOfColumns, nrOfRows);
+		int rowNr = nrOfRows - 1;
+		for (String row : rows) {
+			char[] cells = row.toCharArray();
+			for (int colNr = 0; colNr < nrOfColumns; colNr++) {
+				if ('X' == cells[colNr]) {
+					game.makeAlive(colNr, rowNr);
+				}
+			}
+			rowNr--;
+		}
+		return game;
 	}
 }
