@@ -1,0 +1,13 @@
+This is the code for the Game Of Life Kata we performed at Qualogy on 8/12/2011
+
+The object of the kata was to implement a (text based) game of life 
+(see http://en.wikipedia.org/wiki/Conway's_Game_of_Life) with which a player 
+could (programmatically) seed a game of life and have it play any given number of 
+generations.
+
+The code in the master / root branch is the state of the code where we ended up
+at the end of the common kata. 
+
+My (wouter) continuation with that code is in the 'wouter' branch. Feel free to 
+fork from the master, and send us a line on where to find your own version. 
+Either from scratch, or continuing where we ended tonight.
