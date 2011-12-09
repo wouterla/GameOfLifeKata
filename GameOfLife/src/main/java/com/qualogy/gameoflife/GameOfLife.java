@@ -1,12 +1,14 @@
 package com.qualogy.gameoflife;
 
-import java.util.Arrays;
-
 public class GameOfLife {
 
-	boolean[][] grid;
-	int numberOfColumns;
-	int numberOfRows;
+	private static final String SEPARATOR = "\n";
+	private static final char DEAD_CHARACTER = '.';
+	private static final char ALIVE_CHARACTER = 'X';
+	
+	private boolean[][] grid;
+	private int numberOfColumns;
+	private int numberOfRows;
 
 	public GameOfLife(int numberOfColumns, int numberOfRows) {
 		this.numberOfColumns = numberOfColumns;
@@ -18,17 +20,28 @@ public class GameOfLife {
 		boolean[][] newGrid = new boolean[numberOfColumns][numberOfRows];
 		
 		for (int column = 0; column < numberOfColumns; column++) {
-			for (int row = 0; row < numberOfRows; row++) {
-				int neighbours = liveNeighbourCount(column, row);
-				if (isAlive(column, row) && (neighbours == 2)) {
-					newGrid[column][row] = true;
-				} 
-				if (neighbours == 3) {
-					newGrid[column][row] = true;
-				}
+			for (int row = 0; row < numberOfRows; row++) {				
+				newGrid[column][row] = getNewStateForCell(column, row);
 			}
 		}
 		grid = newGrid;
+	}
+
+	public boolean getNewStateForCell(int column, int row) {
+		int liveNeighbours = liveNeighbourCount(column, row);
+		if (isAlive(column, row)) {
+			return calculateStateForLiveCells(liveNeighbours);
+		} else {
+			return calculateStateForDeadCells(liveNeighbours);
+		}
+	}
+	
+	public boolean calculateStateForLiveCells(int liveNeighbours) {
+		return (liveNeighbours == 2) || (liveNeighbours == 3);
+	}
+	
+	public boolean calculateStateForDeadCells(int liveNeighbours) {
+		return (liveNeighbours == 3);
 	}
 
 	public int countLiveCells() {
@@ -45,21 +58,26 @@ public class GameOfLife {
 
 	public int liveNeighbourCount(int columnPosition, int rowPosition) {
 		int neighbourCount = 0;
-		int colStartIndex = Math.max(columnPosition - 1, 0);
-		int colEndIndex = Math.min(columnPosition + 1, numberOfColumns - 1);
-		int rowStartIndex = Math.max(rowPosition - 1, 0);
-		int rowEndIndex = Math.min(rowPosition + 1, numberOfRows - 1);
-
-		for (int column = colStartIndex; column <= colEndIndex; column++) {
-			for (int row = rowStartIndex; row <= rowEndIndex; row++) {
-				if (grid[column][row] 
-						&& !((columnPosition == column) && (rowPosition == row))) {
+		for (int column = columnPosition - 1; column <= columnPosition + 1; column++) {
+			for (int row = rowPosition - 1; row <= rowPosition + 1; row++) {
+				if (isOnGrid(column, row) 
+						&& isAlive(column, row)
+						&& !isSamePosition(columnPosition, rowPosition, column, row)) {
 					neighbourCount++;
 				}
 			}
 		}
-
 		return neighbourCount;
+	}
+
+	public boolean isSamePosition(int columnPosition, int rowPosition,
+			int column, int row) {
+		return (columnPosition == column) && (rowPosition == row);
+	}
+	
+	public boolean isOnGrid(int column, int row) {
+		return ((column > 0) && (column < numberOfColumns)
+				&& (row > 0) && (row < numberOfRows));
 	}
 
 	public void makeAlive(int column, int row) {
@@ -76,18 +94,18 @@ public class GameOfLife {
 		for (int row = numberOfRows - 1; row >= 0; row--) {
 			for (int col = 0; col < numberOfColumns; col++) {
 				if (grid[col][row]) {
-					str = str + 'X';
+					str = str + ALIVE_CHARACTER;
 				} else {
-					str = str + '.';
+					str = str + DEAD_CHARACTER;
 				}
 			}
-			str = str + "\n";
+			str = str + SEPARATOR;
 		}
 		return str;
 	}
 	
 	public static GameOfLife fromString(String gridString) {
-		String[] rows = gridString.split("\n");
+		String[] rows = gridString.split(SEPARATOR);
 		int nrOfRows = rows.length;
 		int nrOfColumns = rows[0].length();
 
@@ -96,7 +114,7 @@ public class GameOfLife {
 		for (String row : rows) {
 			char[] cells = row.toCharArray();
 			for (int colNr = 0; colNr < nrOfColumns; colNr++) {
-				if ('X' == cells[colNr]) {
+				if (ALIVE_CHARACTER == cells[colNr]) {
 					game.makeAlive(colNr, rowNr);
 				}
 			}
